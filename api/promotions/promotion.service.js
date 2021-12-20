@@ -2,24 +2,16 @@ const pool = require("../../config/database");
 
 module.exports = {
   create: (data, callBack) => {
-    try {
-      if (data.role != "admin_general") {
-        pool.query(
-          `INSERT INTO promotion(cathegory_id,user_id,remise,fidelity) VALUES (?, ?, ?, ?)`,
-          [data.cathegory_id, data.user_id, data.remise, data.fidelity],
-          (error, results, fields) => {
-            if (error) {
-              callBack(error);
-            }
-            return callBack(null, results);
-          }
-        );
-      } else {
-        return callBack(null, "Not Authorized");
+    pool.query(
+      `INSERT INTO promotion(cathegory_id,user_id,remise,fidelity) VALUES (?, ?, ?, ?)`,
+      [data.cathegory_id, data.user_id, data.remise, data.fidelity],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results);
       }
-    } catch (error) {
-      return callBack(error);
-    }
+    );
   },
   status: (data, callBack) => {
     pool.query(
@@ -35,8 +27,7 @@ module.exports = {
   },
   getPromotion: (callBack) => {
     try {
-      pool.query(
-          `SELECT * FROM promotion`, (error, results, fields) => {
+      pool.query(`SELECT * FROM promotion`, (error, results, fields) => {
         if (error) {
           callBack(error);
         }

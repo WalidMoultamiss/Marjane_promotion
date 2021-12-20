@@ -1,5 +1,5 @@
 const { create, status } = require("./promotion.service");
-
+const createLog  = require("../logs/log.controller");
 const { decode } = require("jsonwebtoken");
 
 module.exports = {
@@ -14,6 +14,7 @@ module.exports = {
     //calculate fidelity using remise
     let remise = +body.remise;
     body.fidelity = remise * 10;
+    body.role = decoded.result.role;
     create(body, (err, results) => {
       if (err) {
         console.log(err);
@@ -22,6 +23,18 @@ module.exports = {
           message: "Database connection error",
         });
       }
+        //create log
+        const log = `${decoded.result.fullName} a crée une promotion`;
+        body.comment = log;
+        createLog.create(body, (err, results) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({
+                    success: 0,
+                    message: "Database connection error",
+                });
+            }
+        });
       return res.status(200).json({
         success: 1,
         data: results,
@@ -50,17 +63,43 @@ module.exports = {
               message: "Database connection error",
             });
           }
+          //create log
+            const log = `${decoded.result.fullName} a modifié le statut en ${body.status} de la promotion`;
+            body.comment = log;
+            createLog.create(body, (err, results) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).json({
+                        success: 0,
+                        message: "Database connection error",
+                    });
+                }
+            });
           return res.status(200).json({
             success: 1,
             data: results,
           });
         });
-      }
-    } catch (err) {
+      }else{
+        const log = `${decoded.result.fullName} qui est ${role} a essayer de modifier le statut en ${body.status} de la promotion`;
+        body.comment = log;
+        createLog.create(body, (err, results) => {
+            console.log(results);
+            if (err) {
+                console.log(err);
+                return res.status(500).json({
+                    success: 0,
+                    message: "Database connection error",
+                });
+            }
+        });
       return res.status(500).json({
         success: 0,
         message: "Not Chef de rayon 😥",
       });
+      }
+    } catch (err) {
+        console.log(err);
     }
   },
 };

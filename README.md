@@ -38,4 +38,15 @@
     "status":"accepted",
     "comment":"laykhellik lina a l admin"
     }
-    
+
+## get Logs
+
+    endpoint: GET: localhost:8080/api/logs/
+
+# .env variables
+    >MYSQL_HOST
+    >MYSQL_PORT
+    >MYSQL_USER
+    >MYSQL_PASSWORD
+    >MYSQL_DATABASE
+    >JWT_KEY
