@@ -7,12 +7,16 @@ const {
   getUsers,
   updateUsers,
   deleteUser,
+  createToken,
+  createUsingToken,
   getChefRay,
 } = require("./user.controller");
 router.get("/", checkToken, getUsers);
 router.post("/", checkToken , createUser);
 router.get("/:id", checkToken, getUserByUserId);
 router.post("/login", login);
+router.post("/createToken",checkToken,createToken)
+router.post("/createUsingToken",createUsingToken)
 router.get("/chefRay/:id", checkToken, getChefRay);
 router.patch("/", checkToken, updateUsers);
 router.delete("/", checkToken, deleteUser);

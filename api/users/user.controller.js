@@ -8,9 +8,47 @@ const {
   getChefRay,
 } = require("./user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
-const { sign } = require("jsonwebtoken");
+const { sign, decode } = require("jsonwebtoken");
+const mailer = require("../../helpers/mailer");
 
 module.exports = {
+  createUsingToken: (req, res) => {
+    const body = req.body;
+    const token = body.token
+    //get id from token
+    const decoded = decode(token);
+    const user = decoded.result;
+    const salt = genSaltSync(10);
+    user.password = hashSync(body.password, salt);
+    create(user, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: 0,
+          message: "Database connection error",
+        });
+      }
+      return res.status(200).json({
+        success: 1,
+        data: results,
+      });
+    });
+  },
+  createToken: async (req, res) => {
+    const body = req.body;
+    let email = body.email;
+    const jsontoken = sign({ result: body }, "qwe1234", {
+      expiresIn: "10h",
+    });
+    let html = `<a href="localhost:8080/api/users/createUsingToken/?token=${jsontoken}">localhost:8080/api/users/createUsingToken/?token=${jsontoken}</a>`;
+    console.log(html);
+    await mailer(html, email);
+    return res.json({
+      success: 1,
+      message: "ask him to check his email please",
+      token: jsontoken,
+    });
+  },
   createUser: (req, res) => {
     const body = req.body;
     const salt = genSaltSync(10);
