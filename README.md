@@ -1,4 +1,4 @@
-# Marjane_promotion
+# Marjane promotion 🚀
 
 ## Create user
 
@@ -32,7 +32,7 @@
 ## validate promotion
 
     endpoint: POST: localhost:8080/api/promotions/status
-
+###
     {
     "promotion_id":"12",
     "status":"accepted",
@@ -43,10 +43,10 @@
 
     endpoint: GET: localhost:8080/api/logs/
 
-# .env variables
-    >MYSQL_HOST
-    >MYSQL_PORT
-    >MYSQL_USER
-    >MYSQL_PASSWORD
-    >MYSQL_DATABASE
-    >JWT_KEY
+## .env variables
+>MYSQL_HOST
+>MYSQL_PORT
+>MYSQL_USER
+>MYSQL_PASSWORD
+>MYSQL_DATABASE
+>JWT_KEY
