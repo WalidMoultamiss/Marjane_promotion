@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 module.exports = {
   checkToken: (req, res, next) => {
-    let token = req.get("authorization");
+    let token = req.get("Authorization");
     if (token) {
       // Remove Bearer from string
-      token = token.slice(7);
+      token = token.split(" ")[1];
       jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
         if (err) {
           return res.json({

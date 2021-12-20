@@ -5,6 +5,7 @@ const {
   getUsers,
   updateUser,
   deleteUser,
+  getChefRay,
 } = require("./user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
@@ -19,7 +20,7 @@ module.exports = {
         console.log(err);
         return res.status(500).json({
           success: 0,
-          message: "Database connection errror",
+          message: "Database connection error",
         });
       }
       return res.status(200).json({
@@ -57,6 +58,19 @@ module.exports = {
           data: "Invalid email or password",
         });
       }
+    });
+  },
+
+  getChefRay: (req, res) => {
+    const id = req.params.id;
+    getChefRay(id, (err, results) => {
+      if (err) {
+        console.log(err);
+      }
+      return res.status(200).json({
+        success: 1,
+        data: results,
+      });
     });
   },
   getUserByUserId: (req, res) => {

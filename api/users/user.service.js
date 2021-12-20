@@ -45,10 +45,10 @@ module.exports = {
       }
     );
   },
-  getUsers: (callBack) => {
+  getChefRay: (id, callBack) => {
     pool.query(
-      `select id,firstName,lastName,gender,email,number from users`,
-      [],
+      ` select * from chef_rayon_info where marjane_id = ?`,
+      [id],
       (error, results, fields) => {
         if (error) {
           callBack(error);
@@ -56,6 +56,14 @@ module.exports = {
         return callBack(null, results);
       }
     );
+  },
+  getUsers: (callBack) => {
+    pool.query(`select * from getusers`, [], (error, results, fields) => {
+      if (error) {
+        callBack(error);
+      }
+      return callBack(null, results);
+    });
   },
   updateUser: (data, callBack) => {
     pool.query(
