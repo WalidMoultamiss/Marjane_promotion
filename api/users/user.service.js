@@ -2,28 +2,28 @@ const pool = require("../../config/database");
 
 module.exports = {
   create: (data, callBack) => {
-    pool.query(
-      `insert into registration(firstName, lastName, gender, email, password, number) 
-                values(?,?,?,?,?,?)`,
-      [
-        data.first_name,
-        data.last_name,
-        data.gender,
-        data.email,
-        data.password,
-        data.number
-      ],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
-        }
-        return callBack(null, results);
+    try {
+      if (data.role != "admin_general") {
+        pool.query(
+          `INSERT INTO users(fullName, email, password, role) VALUES (?, ?, ?, ?)`,
+          [data.fullName, data.email, data.password, data.role],
+          (error, results, fields) => {
+            if (error) {
+              callBack(error);
+            }
+            return callBack(null, results);
+          }
+        );
+      } else {
+        return callBack(null, "Admin General cannot be created");
       }
-    );
+    } catch (error) {
+      return callBack(error);
+    }
   },
   getUserByUserEmail: (email, callBack) => {
     pool.query(
-      `select * from registration where email = ?`,
+      `select * from users where email = ?`,
       [email],
       (error, results, fields) => {
         if (error) {
@@ -35,7 +35,7 @@ module.exports = {
   },
   getUserByUserId: (id, callBack) => {
     pool.query(
-      `select id,firstName,lastName,gender,email,number from registration where id = ?`,
+      `select id,firstName,lastName,gender,email,number from users where id = ?`,
       [id],
       (error, results, fields) => {
         if (error) {
@@ -45,9 +45,9 @@ module.exports = {
       }
     );
   },
-  getUsers: callBack => {
+  getUsers: (callBack) => {
     pool.query(
-      `select id,firstName,lastName,gender,email,number from registration`,
+      `select id,firstName,lastName,gender,email,number from users`,
       [],
       (error, results, fields) => {
         if (error) {
@@ -59,7 +59,7 @@ module.exports = {
   },
   updateUser: (data, callBack) => {
     pool.query(
-      `update registration set firstName=?, lastName=?, gender=?, email=?, password=?, number=? where id = ?`,
+      `update users set firstName=?, lastName=?, gender=?, email=?, password=?, number=? where id = ?`,
       [
         data.first_name,
         data.last_name,
@@ -67,7 +67,7 @@ module.exports = {
         data.email,
         data.password,
         data.number,
-        data.id
+        data.id,
       ],
       (error, results, fields) => {
         if (error) {
@@ -79,7 +79,7 @@ module.exports = {
   },
   deleteUser: (data, callBack) => {
     pool.query(
-      `delete from registration where id = ?`,
+      `delete from users where id = ?`,
       [data.id],
       (error, results, fields) => {
         if (error) {
@@ -88,5 +88,5 @@ module.exports = {
         return callBack(null, results[0]);
       }
     );
-  }
+  },
 };
