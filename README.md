@@ -2,7 +2,6 @@
 
 ## Create user
 
-    ```
     endpoint: localhost:8080/api/users/
     
     {
@@ -11,4 +10,3 @@
     "password":"1234",
     "role":"admin_general"
     }
-    ```
