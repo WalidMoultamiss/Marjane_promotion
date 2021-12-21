@@ -11,6 +11,10 @@ app.use("/api/users", userRouter);
 app.use("/api/promotions", promotionRouter);
 app.use("/api/logs", logsRouter);
 
+//use static views
+app.use(express.static(__dirname + '/public'));
+
+
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

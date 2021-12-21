@@ -1,3 +1,6 @@
+var ejs = require("ejs");
+var fs = require("fs");
+
 const {
   create,
   getUserByUserEmail,
@@ -14,7 +17,7 @@ const mailer = require("../../helpers/mailer");
 module.exports = {
   createUsingToken: (req, res) => {
     const body = req.body;
-    const token = body.token
+    const token = body.token;
     //get id from token
     const decoded = decode(token);
     const user = decoded.result;
@@ -40,7 +43,11 @@ module.exports = {
     const jsontoken = sign({ result: body }, "qwe1234", {
       expiresIn: "10h",
     });
-    let html = `<a href="localhost:8080/api/users/createUsingToken/?token=${jsontoken}">localhost:8080/api/users/createUsingToken/?token=${jsontoken}</a>`;
+    body.token = jsontoken;
+    let html = ejs.render(fs.readFileSync("public/views/email.ejs", "utf8"), {
+      data: body,
+    });
+
     console.log(html);
     await mailer(html, email);
     return res.json({
