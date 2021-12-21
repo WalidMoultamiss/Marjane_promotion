@@ -1,5 +1,5 @@
-const { create, status } = require("./promotion.service");
-const createLog  = require("../logs/log.controller");
+const { create, status, getPromotions } = require("./promotion.service");
+const createLog = require("../logs/log.controller");
 const { decode } = require("jsonwebtoken");
 
 module.exports = {
@@ -23,23 +23,60 @@ module.exports = {
           message: "Database connection error",
         });
       }
-        //create log
-        const log = `${decoded.result.fullName} a crée une promotion`;
-        body.comment = log;
-        createLog.create(body, (err, results) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({
-                    success: 0,
-                    message: "Database connection error",
-                });
-            }
-        });
+      //create log
+      const log = `${decoded.result.fullName} a crée une promotion`;
+
+      body.comment = log;
+      createLog.create(body, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: 0,
+            message: "Database connection error",
+          });
+        }
+      });
       return res.status(200).json({
         success: 1,
         data: results,
       });
     });
+  },
+  getPromotions: (req, res) => {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = decode(token);
+    const role = decoded.result.role;
+    if (role == "admin_general") {
+      getPromotions((err, results) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        //create log
+        const log = `${decoded.result.fullName} a demandé la liste des promotions`;
+        let body = {
+          comment: log,
+        };
+        createLog.create(body, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+            });
+          }
+        });
+        return res.json({
+          success: 1,
+          data: results,
+        });
+      });
+    } else {
+      return res.json({
+        success: 0,
+        message: "Access Denied! Unauthorized user",
+      });
+    }
   },
   status: (req, res) => {
     const body = req.body;
@@ -64,42 +101,42 @@ module.exports = {
             });
           }
           //create log
-            const log = `${decoded.result.fullName} a modifié le statut en ${body.status} de la promotion`;
-            body.comment = log;
-            createLog.create(body, (err, results) => {
-                if (err) {
-                    console.log(err);
-                    return res.status(500).json({
-                        success: 0,
-                        message: "Database connection error",
-                    });
-                }
-            });
+          const log = `${decoded.result.fullName} a modifié le statut en ${body.status} de la promotion`;
+          body.comment = log;
+          createLog.create(body, (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({
+                success: 0,
+                message: "Database connection error",
+              });
+            }
+          });
           return res.status(200).json({
             success: 1,
             data: results,
           });
         });
-      }else{
+      } else {
         const log = `${decoded.result.fullName} qui est ${role} a essayer de modifier le statut en ${body.status} de la promotion`;
         body.comment = log;
         createLog.create(body, (err, results) => {
-            console.log(results);
-            if (err) {
-                console.log(err);
-                return res.status(500).json({
-                    success: 0,
-                    message: "Database connection error",
-                });
-            }
+          console.log(results);
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+            });
+          }
         });
-      return res.status(500).json({
-        success: 0,
-        message: "Not Chef de rayon 😥",
-      });
+        return res.status(500).json({
+          success: 0,
+          message: "Not Chef de rayon 😥",
+        });
       }
     } catch (err) {
-        console.log(err);
+      console.log(err);
     }
   },
 };

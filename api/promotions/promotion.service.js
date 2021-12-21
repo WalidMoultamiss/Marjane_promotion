@@ -25,7 +25,7 @@ module.exports = {
       }
     );
   },
-  getPromotion: (callBack) => {
+  getPromotions: (callBack) => {
     try {
       pool.query(`SELECT * FROM promotion`, (error, results, fields) => {
         if (error) {

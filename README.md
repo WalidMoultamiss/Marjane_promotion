@@ -2,14 +2,22 @@
 
 ## Create user
 
-    endpoint: POST: localhost:8080/api/users/
-
+### Create token
+    endpoint: POST: localhost:8080/api/users/login
 ###
     {
     "fullName":"walid",
     "email":"walid@gmail.com",
-    "password":"1234",
     "role":"admin_general"
+    }
+
+### create user using token
+    endpoint: POST: localhost:8080/api/users/login
+
+###
+    {
+        "password":"1233",
+        "token":"eyi876iuyiuyiy7657"
     }
 
 ## login

@@ -1,5 +1,7 @@
 var ejs = require("ejs");
 var fs = require("fs");
+const createLog  = require("../logs/log.controller");
+
 
 const {
   create,
@@ -31,6 +33,18 @@ module.exports = {
           message: "Database connection error",
         });
       }
+      //create log
+      const log = `${user.fullName} a crée un compte`;
+      body.comment = log;
+      createLog.create(body, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: 0,
+            message: "Database connection error",
+          });
+        }
+      });
       return res.status(200).json({
         success: 1,
         data: results,
@@ -48,9 +62,20 @@ module.exports = {
       data: body,
     });
 
-    console.log(html);
     await mailer(html, email);
-    return res.json({
+    //create log
+    const log = `un token a etait envoyer vers ${body.email}, le token est: ${body.token}`;
+    body.comment = log;
+    createLog.create(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: 0,
+          message: "Database connection error",
+        });
+      }
+    });
+    return res.status(200).json({
       success: 1,
       message: "ask him to check his email please",
       token: jsontoken,
@@ -92,7 +117,19 @@ module.exports = {
         const jsontoken = sign({ result: results }, "qwe1234", {
           expiresIn: "1h",
         });
-        return res.json({
+        //create log
+        const log = `${results.fullName} a connecté`;
+        body.comment = log;
+        createLog.create(body, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+            });
+          }
+        });
+        return res.status(200).json({
           success: 1,
           message: "login successfully",
           token: jsontoken,
@@ -108,10 +145,29 @@ module.exports = {
 
   getChefRay: (req, res) => {
     const id = req.params.id;
+    //decode token
+    const token = req.headers.authorization;
+    const decoded = decode(token);
+    const user = decoded.result;
+
     getChefRay(id, (err, results) => {
       if (err) {
         console.log(err);
       }
+      //create log
+      const log = `${user.fullName} a demandé la liste des chefs rayon`;
+      const body = {
+        comment: log,
+      };
+      createLog.create(body, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: 0,
+            message: "Database connection error",
+          });
+        }
+      });
       return res.status(200).json({
         success: 1,
         data: results,
@@ -144,6 +200,20 @@ module.exports = {
         console.log(err);
         return;
       }
+      //create log
+      const log = `${user.fullName} a demandé la liste des utilisateurs`;
+      const body = {
+        comment: log,
+      };
+      createLog.create(body, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: 0,
+            message: "Database connection error",
+          });
+        }
+      });
       return res.json({
         success: 1,
         data: results,
