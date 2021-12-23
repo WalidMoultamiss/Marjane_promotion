@@ -3,7 +3,7 @@
 ## Create user
 
 ### Create token
-    endpoint: POST: localhost:8080/api/users/login
+    endpoint: POST: localhost:8080/api/users/createToken
 ###
     {
     "fullName":"walid",
@@ -37,7 +37,7 @@
 ###
     {
     "remise":"5",
-    "cathegory_id":"1"
+    "product_id":"1"
     }
 
 ## validate promotion

@@ -1,7 +1,6 @@
 var ejs = require("ejs");
 var fs = require("fs");
-const createLog  = require("../logs/log.controller");
-
+const createLog = require("../logs/log.controller");
 
 const {
   create,
@@ -11,6 +10,7 @@ const {
   updateUser,
   deleteUser,
   getChefRay,
+  getUserAndMarjaneId,
 } = require("./user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign, decode } = require("jsonwebtoken");
@@ -101,7 +101,8 @@ module.exports = {
   },
   login: (req, res) => {
     const body = req.body;
-    getUserByUserEmail(body.email, (err, results) => {
+     getUserByUserEmail(body.email, async (err, results) => {
+      let resultUser = results;
       if (err) {
         console.log(err);
       }
@@ -111,29 +112,41 @@ module.exports = {
           data: "Invalid email or password",
         });
       }
-      const result = compareSync(body.password, results.password);
+      const result =  compareSync(body.password, results.password);
       if (result) {
-        results.password = undefined;
-        const jsontoken = sign({ result: results }, "qwe1234", {
-          expiresIn: "1h",
-        });
-        //create log
-        const log = `${results.fullName} a connecté`;
-        body.comment = log;
-        createLog.create(body, (err, results) => {
-          if (err) {
-            console.log(err);
-            return res.status(500).json({
-              success: 0,
-              message: "Database connection error",
-            });
-          }
-        });
-        return res.status(200).json({
-          success: 1,
-          message: "login successfully",
-          token: jsontoken,
-        });
+        if (results.role == "admin_marjane") {
+          let marjane_id = 0
+           await getUserAndMarjaneId(body, (err, res) => {
+            console.log(res.marjane_id);
+            // if (err) {
+              //   console.log(err);
+              // }else{
+                //   marjane_id = res.marjane_id
+                // }
+              });
+              console.log(marjane_id);
+          resultUser.password = undefined;
+          const jsontoken = sign({ result: resultUser }, "qwe1234", {
+            expiresIn: "1h",
+          });
+          //create log
+          const log = `${results.fullName} a connecté`;
+          body.comment = log;
+          createLog.create(body, (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({
+                success: 0,
+                message: "Database connection error",
+              });
+            }
+          });
+          return res.status(200).json({
+            success: 1,
+            message: "login successfully",
+            token: jsontoken,
+          });
+        }
       } else {
         return res.json({
           success: 0,

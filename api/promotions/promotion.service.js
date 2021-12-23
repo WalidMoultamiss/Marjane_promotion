@@ -3,8 +3,8 @@ const pool = require("../../config/database");
 module.exports = {
   create: (data, callBack) => {
     pool.query(
-      `INSERT INTO promotion(cathegory_id,user_id,remise,fidelity) VALUES (?, ?, ?, ?)`,
-      [data.cathegory_id, data.user_id, data.remise, data.fidelity],
+      `INSERT INTO promotion(product_id,user_id,remise,fidelity) VALUES (?, ?, ?, ?)`,
+      [data.product_id, data.user_id, data.remise, data.fidelity],
       (error, results, fields) => {
         if (error) {
           callBack(error);
@@ -27,7 +27,8 @@ module.exports = {
   },
   getPromotions: (callBack) => {
     try {
-      pool.query(`SELECT * FROM promotion`, (error, results, fields) => {
+      pool.query(
+        `SELECT * FROM promotion`, (error, results, fields) => {
         if (error) {
           callBack(error);
         }
@@ -37,4 +38,20 @@ module.exports = {
       return callBack(error);
     }
   },
+  getPromotionToday: (callBack) => {
+    try {
+      pool.query(
+        `SELECT * FROM promotion_info WHERE DATE(created_at) = CURDATE()`,
+        (error, results, fields) => {
+          if (error) {
+            callBack(error);
+          }
+          return callBack(null, results);
+        }
+      );
+    } catch (error) {
+      return callBack(error);
+    }
+  },
+  
 };

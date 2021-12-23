@@ -1,4 +1,9 @@
-const { create, status, getPromotions } = require("./promotion.service");
+const {
+  create,
+  status,
+  getPromotions,
+  getPromotionToday,
+} = require("./promotion.service");
 const createLog = require("../logs/log.controller");
 const { decode } = require("jsonwebtoken");
 
@@ -15,6 +20,7 @@ module.exports = {
     let remise = +body.remise;
     body.fidelity = remise * 10;
     body.role = decoded.result.role;
+    console.log(decoded.result);
     create(body, (err, results) => {
       if (err) {
         console.log(err);
@@ -46,6 +52,8 @@ module.exports = {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = decode(token);
     const role = decoded.result.role;
+    today = new Date();
+    today.getHours();
     if (role == "admin_general") {
       getPromotions((err, results) => {
         if (err) {
@@ -71,6 +79,39 @@ module.exports = {
           data: results,
         });
       });
+    } else if (role == "chef_rayon") {
+      if (today.getHours() < 17 && today.getHours() >= 8) {
+        getPromotionToday((err, results) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          let today = new Date();
+          //create log
+          const log = `${decoded.result.fullName} a demandé la liste des promotions du jour a ${today}`;
+          let body = {
+            comment: log,
+          };
+          createLog.create(body, (err, results) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({
+                success: 0,
+                message: "Database connection error",
+              });
+            }
+          });
+          return res.json({
+            success: 1,
+            data: results,
+          });
+        });
+      } else {
+        return res.json({
+          success: 0,
+          message: "t3etelti assat tal ghedda inchaalah",
+        });
+      }
     } else {
       return res.json({
         success: 0,

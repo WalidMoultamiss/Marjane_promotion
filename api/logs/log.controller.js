@@ -6,12 +6,6 @@ module.exports = {
   create: (req, res) => {
     const body = req;
     let role = body.role;
-
-    // if (
-    //   role == "chef_rayon" ||
-    //   role == "admin_general" ||
-    //   role == "admin_marjane"
-    // ) {
     create(body, (err, results) => {
       if (err) {
         console.log(err);
@@ -58,7 +52,7 @@ module.exports = {
       const log = `${decoded.result.fullName} qui est ${role?.replace(
         "_",
         " "
-      )} a demandé la liste des promotions`;
+      )} a demandé la liste des logs`;
       let body = {
         comment: log,
       };

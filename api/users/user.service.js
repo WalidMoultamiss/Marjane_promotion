@@ -33,6 +33,19 @@ module.exports = {
       }
     );
   },
+  getUserAndMarjaneId: (email, callBack) => {
+    
+    pool.query(
+      `SELECT users.*,marjane.id as marjane_id FROM users,marjane where users.id = marjane.admin_id and users.email = ?`,
+      [email],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results[0]);
+      }
+    );
+  },
   getUserByUserId: (id, callBack) => {
     pool.query(
       `select id,firstName,lastName,gender,email,number from users where id = ?`,
