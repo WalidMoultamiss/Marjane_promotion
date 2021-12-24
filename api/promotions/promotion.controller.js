@@ -30,7 +30,8 @@ module.exports = {
         });
       }
       //create log
-      const log = `${decoded.result.fullName} a crée une promotion`;
+      const log = 
+      `${decoded.result.fullName} a crée une promotion`;
 
       body.comment = log;
       createLog.create(body, (err, results) => {

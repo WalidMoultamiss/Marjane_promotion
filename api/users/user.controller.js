@@ -101,7 +101,7 @@ module.exports = {
   },
   login: (req, res) => {
     const body = req.body;
-     getUserByUserEmail(body.email, async (err, results) => {
+     getUserByUserEmail(body.email, (err, results) => {
       let resultUser = results;
       if (err) {
         console.log(err);
@@ -112,19 +112,9 @@ module.exports = {
           data: "Invalid email or password",
         });
       }
+      console.log(resultUser);
       const result =  compareSync(body.password, results.password);
       if (result) {
-        if (results.role == "admin_marjane") {
-          let marjane_id = 0
-           await getUserAndMarjaneId(body, (err, res) => {
-            console.log(res.marjane_id);
-            // if (err) {
-              //   console.log(err);
-              // }else{
-                //   marjane_id = res.marjane_id
-                // }
-              });
-              console.log(marjane_id);
           resultUser.password = undefined;
           const jsontoken = sign({ result: resultUser }, "qwe1234", {
             expiresIn: "1h",
@@ -146,7 +136,7 @@ module.exports = {
             message: "login successfully",
             token: jsontoken,
           });
-        }
+        
       } else {
         return res.json({
           success: 0,

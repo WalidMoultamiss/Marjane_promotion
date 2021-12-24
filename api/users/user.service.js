@@ -21,42 +21,60 @@ module.exports = {
       return callBack(error);
     }
   },
-  getUserByUserEmail: (email, callBack) => {
+  getUserByUserEmail: async (email, callBack) => {
     pool.query(
       `select * from users where email = ?`,
       [email],
-      (error, results, fields) => {
+      async (error, results, fields) => {
         if (error) {
           callBack(error);
         }
-        return callBack(null, results[0]);
+        if (results[0].role == "admin_marjane") {
+          const user = await pool.query(
+            `SELECT users.*,marjane.id as marjane_id FROM users,marjane where users.id = marjane.admin_id and users.email = ?`,
+            [email],
+            (error, results, fields) => {
+              if (error) {
+                return error;
+              }
+              return results;
+            }
+          );
+          return callBack(null, user);
+        } else {
+          return callBack(null, results[0]);
+        }
       }
     );
   },
-  getUserAndMarjaneId: (email, callBack) => {
-    
-    pool.query(
-      `SELECT users.*,marjane.id as marjane_id FROM users,marjane where users.id = marjane.admin_id and users.email = ?`,
-      [email],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
+  getUserAndMarjaneId: (email) => {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `SELECT users.*,marjane.id as marjane_id FROM users,marjane where users.id = marjane.admin_id and users.email = ?`,
+        [email],
+        (error, results, fields) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(results[0]);
         }
-        return callBack(null, results[0]);
-      }
-    );
+      );
+    });
   },
-  getUserByUserId: (id, callBack) => {
-    pool.query(
-      `select id,firstName,lastName,gender,email,number from users where id = ?`,
-      [id],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
+
+  getUserByUserId: (id) => {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `select id,firstName,lastName,gender,email,number from users where id = ?`,
+        [id],
+        (error, results, fields) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(results[0]);
         }
-        return callBack(null, results[0]);
-      }
-    );
+      );
+    });
   },
   getChefRay: (id, callBack) => {
     pool.query(

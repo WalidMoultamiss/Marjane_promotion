@@ -25,6 +25,18 @@ module.exports = {
       }
     );
   },
+  updateAllofYesterday: (data, callBack) => {
+    pool.query(
+      //for loop to update all of yesterday
+      `UPDATE promotion SET status = 'yesterday' WHERE status = 'today'`,
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
   getPromotions: (callBack) => {
     try {
       pool.query(
