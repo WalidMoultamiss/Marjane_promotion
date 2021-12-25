@@ -21,29 +21,16 @@ module.exports = {
       return callBack(error);
     }
   },
-  getUserByUserEmail: async (email, callBack) => {
+  getUserByUserEmail: async (user, callBack) => {
     pool.query(
-      `select * from users where email = ?`,
-      [email],
-      async (error, results, fields) => {
+      user.role != 'admin' ? `select * from users where email = ?` :
+      `SELECT users.*,marjane.id as marjane_id FROM users,marjane where users.id = marjane.admin_id and users.email = ?`,
+      [user.email],
+      (error, results, fields) => {
         if (error) {
           callBack(error);
         }
-        if (results[0].role == "admin_marjane") {
-          const user = await pool.query(
-            `SELECT users.*,marjane.id as marjane_id FROM users,marjane where users.id = marjane.admin_id and users.email = ?`,
-            [email],
-            (error, results, fields) => {
-              if (error) {
-                return error;
-              }
-              return results;
-            }
-          );
-          return callBack(null, user);
-        } else {
-          return callBack(null, results[0]);
-        }
+        return callBack(null, results[0]);
       }
     );
   },

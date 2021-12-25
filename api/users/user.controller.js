@@ -101,18 +101,18 @@ module.exports = {
   },
   login: (req, res) => {
     const body = req.body;
-     getUserByUserEmail(body.email, (err, results) => {
+     getUserByUserEmail(body, (err, results) => {
       let resultUser = results;
       if (err) {
         console.log(err);
       }
+      console.log(resultUser);
       if (!results) {
         return res.json({
           success: 0,
           data: "Invalid email or password",
         });
       }
-      console.log(resultUser);
       const result =  compareSync(body.password, results.password);
       if (result) {
           resultUser.password = undefined;
