@@ -27,7 +27,8 @@
 ###
     {
         "email":"walid@gmail.com",
-        "password":"1234"
+        "password":"1234",
+        "role":"admin"//marjane admin
     }
 
 ## create promotion
