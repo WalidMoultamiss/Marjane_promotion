@@ -51,7 +51,7 @@
     "comment":"laykhellik lina a l admin"
     }
 
-## get Logs
+## get Logs token required
 
     endpoint: GET: localhost:8080/api/logs/
 
