@@ -54,14 +54,3 @@
 ## get Logs token required
 
     endpoint: GET: localhost:8080/api/logs/
-
-## .env variables
-
-    MYSQL_HOST
-    MYSQL_PORT
-    MYSQL_USER
-    MYSQL_PASSWORD
-    MYSQL_DATABASE
-    JWT_KEY
-    NODEMAILER_EMAIL
-    NODEMAILER_PASS
