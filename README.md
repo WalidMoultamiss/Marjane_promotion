@@ -38,7 +38,7 @@
 ###
     {
     "remise":"5",
-    "product_id":"1"
+    "product_id":"10"
     }
 
 ## validate promotion
