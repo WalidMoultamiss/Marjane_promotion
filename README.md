@@ -37,7 +37,7 @@
 
 ###
     {
-    "remise":"5",
+    "remise":"10",
     "product_id":"10"
     }
 
