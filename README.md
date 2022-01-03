@@ -46,7 +46,7 @@
     endpoint: POST: localhost:8080/api/promotions/status
 ###
     {
-    "promotion_id":"12",
+    "promotion_id":"120",
     "status":"accepted",
     "comment":"laykhellik lina a l admin"
     }
