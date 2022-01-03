@@ -16,7 +16,6 @@ module.exports = {
       }
       return true;
     });
-    // }
   },
   getLogs: (req, res) => {
     const token = req.headers.authorization.split(" ")[1];

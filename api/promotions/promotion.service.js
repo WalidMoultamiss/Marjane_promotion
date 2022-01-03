@@ -50,6 +50,21 @@ module.exports = {
       return callBack(error);
     }
   },
+  getproducts: (marjane_id,callBack) => {
+    try {
+      pool.query(
+        `SELECT * FROM produit WHERE marjane_id = ${marjane_id}`,
+        (error, results, fields) => {
+          if (error) {
+            callBack(error);
+          }
+          return callBack(null, results);
+        }
+      );
+    } catch (error) {
+      return callBack(error);
+    }
+  },
   getPromotionToday: (callBack) => {
     try {
       pool.query(

@@ -11,6 +11,14 @@
     "role":"admin_general"
     }
 
+
+### Create token
+    endpoint: POST: localhost:8080/api/users/createmarjane
+###
+    {
+    "city":"safi",
+    "admin_id":"1"
+    }
 ### create user using token
     endpoint: POST: localhost:8080/api/users/login
 

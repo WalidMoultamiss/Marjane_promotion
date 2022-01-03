@@ -9,11 +9,13 @@ const {
   deleteUser,
   createToken,
   createUsingToken,
+  createMarjane,
   getChefRay,
 } = require("./user.controller");
 router.get("/", checkToken, getUsers);
 router.post("/", checkToken , createUser);
 router.get("/:id", checkToken, getUserByUserId);
+router.post("/createmarjane", checkToken, createMarjane);
 router.post("/login", login);
 router.post("/createToken",checkToken,createToken)
 router.post("/createUsingToken",createUsingToken)

@@ -10,6 +10,7 @@ const {
   updateUser,
   deleteUser,
   getChefRay,
+  createMarjane,
   getUserAndMarjaneId,
 } = require("./user.service");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
@@ -51,12 +52,53 @@ module.exports = {
       });
     });
   },
+  createMarjane: (req, res) => {
+    const body = req.body;
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = decode(token);
+    const role = decoded.result.role;
+    if(role == "admin_general"){
+      createMarjane(body, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: 0,
+            message: "Database connection error",
+          });
+        }
+        //create log
+        const log = `${decoded.result.fullName} a crée un marjane`;
+        body.comment = log;
+        createLog.create(body, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+            });
+          }
+        });
+        return res.status(200).json({
+          success: 1,
+          data: results,
+        });
+      });
+    }else{
+      return res.status(200).json({
+        success: 0,
+        message: "Vous n'avez pas le droit d'effectuer cette action",
+      });
+    }
+  },
+
   createToken: async (req, res) => {
     const body = req.body;
+    console.log(body);
     let email = body.email;
     const jsontoken = sign({ result: body }, "qwe1234", {
       expiresIn: "10h",
     });
+
     body.token = jsontoken;
     let html = ejs.render(fs.readFileSync("public/views/email.ejs", "utf8"), {
       data: body,
@@ -135,6 +177,7 @@ module.exports = {
             success: 1,
             message: "login successfully",
             token: jsontoken,
+            user: resultUser,
           });
         
       } else {
@@ -198,6 +241,9 @@ module.exports = {
     });
   },
   getUsers: (req, res) => {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = decode(token);
+    const user = decoded.result;
     getUsers((err, results) => {
       if (err) {
         console.log(err);

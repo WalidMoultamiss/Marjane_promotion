@@ -3,6 +3,7 @@ const {
   status,
   getPromotions,
   getPromotionToday,
+  getproducts,
 } = require("./promotion.service");
 const createLog = require("../logs/log.controller");
 const { decode } = require("jsonwebtoken");
@@ -49,14 +50,38 @@ module.exports = {
       });
     });
   },
+  getproducts: (req, res) => {
+    const body = req.body;
+    //get id from token
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = decode(token);
+    const marjane_id = decoded.result.marjane_id;
+    getproducts(marjane_id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: 0,
+          message: "Database connection error",
+        });
+      }else{
+        return res.status(200).json({
+          success: 1,
+          data: results,
+        });
+      }
+    });
+  },
+
+
+
   getPromotions: (req, res) => {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = decode(token);
     const role = decoded.result.role;
     today = new Date();
     today.getHours();
-    if (role == "admin_general") {
-      getPromotions((err, results) => {
+    if (role == "admin_marjane") {
+      getPromotionToday((err, results) => {
         if (err) {
           console.log(err);
           return;

@@ -21,9 +21,25 @@ module.exports = {
       return callBack(error);
     }
   },
+  createMarjane: (data, callBack) => {
+    try {
+        pool.query(
+          `INSERT INTO marjane(city,admin_id) VALUES (?, ?)`,
+          [data.city, data.admin_id],
+          (error, results, fields) => {
+            if (error) {
+              callBack(error);
+            }
+            return callBack(null, results);
+          }
+        );
+    } catch (error) {
+      return callBack(error);
+    }
+  },
   getUserByUserEmail: async (user, callBack) => {
     pool.query(
-      user.role != 'admin' ? `select * from users where email = ?` :
+      user.role != 'admin_marjane' ? `select * from users where email = ?` :
       `SELECT users.*,marjane.id as marjane_id FROM users,marjane where users.id = marjane.admin_id and users.email = ?`,
       [user.email],
       (error, results, fields) => {
@@ -50,18 +66,18 @@ module.exports = {
   },
 
   getUserByUserId: (id) => {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        `select id,firstName,lastName,gender,email,number from users where id = ?`,
-        [id],
-        (error, results, fields) => {
-          if (error) {
-            reject(error);
-          }
-          resolve(results[0]);
-        }
-      );
-    });
+    // return new Promise((resolve, reject) => {
+    //   pool.query(
+    //     `select id,firstName,lastName,gender,email,number from users where id = ?`,
+    //     [id],
+    //     (error, results, fields) => {
+    //       if (error) {
+    //         reject(error);
+    //       }
+    //       resolve(results[0]);
+    //     }
+    //   );
+    // });
   },
   getChefRay: (id, callBack) => {
     pool.query(
