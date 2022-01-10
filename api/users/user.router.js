@@ -11,12 +11,14 @@ const {
   createUsingToken,
   createMarjane,
   getChefRay,
+  checkTokenAuth
 } = require("./user.controller");
 router.get("/", checkToken, getUsers);
 router.post("/", checkToken , createUser);
 router.get("/:id", checkToken, getUserByUserId);
 router.post("/createmarjane", checkToken, createMarjane);
 router.post("/login", login);
+router.post("/token",checkTokenAuth);
 router.post("/createToken",checkToken,createToken)
 router.post("/createUsingToken",createUsingToken)
 router.get("/chefRay/:id", checkToken, getChefRay);

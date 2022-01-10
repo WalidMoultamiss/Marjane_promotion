@@ -40,7 +40,7 @@ module.exports = {
   getPromotions: (callBack) => {
     try {
       pool.query(
-        `SELECT * FROM promotion`, (error, results, fields) => {
+        `SELECT * FROM promotion_info`, (error, results, fields) => {
         if (error) {
           callBack(error);
         }

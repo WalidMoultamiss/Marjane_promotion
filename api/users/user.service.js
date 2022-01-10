@@ -120,6 +120,7 @@ module.exports = {
     );
   },
   deleteUser: (data, callBack) => {
+    console.log(data);
     pool.query(
       `delete from users where id = ?`,
       [data.id],

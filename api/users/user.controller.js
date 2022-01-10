@@ -57,7 +57,7 @@ module.exports = {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = decode(token);
     const role = decoded.result.role;
-    if(role == "admin_general"){
+    if (role == "admin_general") {
       createMarjane(body, (err, results) => {
         if (err) {
           console.log(err);
@@ -83,7 +83,7 @@ module.exports = {
           data: results,
         });
       });
-    }else{
+    } else {
       return res.status(200).json({
         success: 0,
         message: "Vous n'avez pas le droit d'effectuer cette action",
@@ -106,7 +106,7 @@ module.exports = {
 
     await mailer(html, email);
     //create log
-    const log = `un token a etait envoyer vers ${body.email}, le token est: ${body.token}`;
+    const log = `un token a était envoyer vers ${body.email}, le token est: ${body.token}`;
     body.comment = log;
     createLog.create(body, (err, results) => {
       if (err) {
@@ -143,7 +143,7 @@ module.exports = {
   },
   login: (req, res) => {
     const body = req.body;
-     getUserByUserEmail(body, (err, results) => {
+    getUserByUserEmail(body, (err, results) => {
       let resultUser = results;
       if (err) {
         console.log(err);
@@ -155,31 +155,30 @@ module.exports = {
           data: "Invalid email or password",
         });
       }
-      const result =  compareSync(body.password, results.password);
+      const result = compareSync(body.password, results.password);
       if (result) {
-          resultUser.password = undefined;
-          const jsontoken = sign({ result: resultUser }, "qwe1234", {
-            expiresIn: "1h",
-          });
-          //create log
-          const log = `${results.fullName} a connecté`;
-          body.comment = log;
-          createLog.create(body, (err, results) => {
-            if (err) {
-              console.log(err);
-              return res.status(500).json({
-                success: 0,
-                message: "Database connection error",
-              });
-            }
-          });
-          return res.status(200).json({
-            success: 1,
-            message: "login successfully",
-            token: jsontoken,
-            user: resultUser,
-          });
-        
+        resultUser.password = undefined;
+        const jsontoken = sign({ result: resultUser }, "qwe1234", {
+          expiresIn: "1h",
+        });
+        //create log
+        const log = `${results.fullName} a connecté`;
+        body.comment = log;
+        createLog.create(body, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+            });
+          }
+        });
+        return res.status(200).json({
+          success: 1,
+          message: "login successfully",
+          token: jsontoken,
+          user: resultUser,
+        });
       } else {
         return res.json({
           success: 0,
@@ -240,6 +239,21 @@ module.exports = {
       });
     });
   },
+  checkTokenAuth: (req, res) => {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = decode(token);
+    if (decoded?.result) {
+      return res.status(200).json({
+        success: 1,
+        data: decoded?.result,
+      });
+    } else {
+      return res.status(200).json({
+        success: 0,
+        message: "Invalid token",
+      });
+    }
+  },
   getUsers: (req, res) => {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = decode(token);
@@ -249,20 +263,22 @@ module.exports = {
         console.log(err);
         return;
       }
-      //create log
-      const log = `${user.fullName} a demandé la liste des utilisateurs`;
-      const body = {
-        comment: log,
-      };
-      createLog.create(body, (err, results) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({
-            success: 0,
-            message: "Database connection error",
-          });
-        }
-      });
+      if (user.role != "admin_generale") {
+        //create log
+        const log = `${user.fullName} a demandé la liste des utilisateurs`;
+        const body = {
+          comment: log,
+        };
+        createLog.create(body, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+            });
+          }
+        });
+      }
       return res.json({
         success: 1,
         data: results,

@@ -1,3 +1,4 @@
+const cors = require('cors')
 require("dotenv").config();
 const express = require("express");
 const app = express();
@@ -5,7 +6,12 @@ const userRouter = require("./api/users/user.router");
 const promotionRouter = require("./api/promotions/promotion.router");
 const logsRouter = require("./api/logs/log.router");
 
-app.use(express.json());
+
+app.use(express.json())
+
+
+app.use(cors());
+app.options('*', cors());
 
 app.use("/api/users", userRouter);
 app.use("/api/promotions", promotionRouter);

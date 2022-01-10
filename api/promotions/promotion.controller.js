@@ -138,6 +138,17 @@ module.exports = {
           message: "t3etelti assat tal ghedda inchaalah",
         });
       }
+    }else if (role == "admin_general") {
+        getPromotions((err, results) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          return res.json({
+            success: 1,
+            data: results,
+          });
+        });
     } else {
       return res.json({
         success: 0,
