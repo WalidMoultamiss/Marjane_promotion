@@ -1,6 +1,8 @@
 var ejs = require("ejs");
 var fs = require("fs");
 const createLog = require("../logs/log.controller");
+const jwt = require("jsonwebtoken");
+
 
 const {
   create,
@@ -108,6 +110,7 @@ module.exports = {
     //create log
     const log = `un token a était envoyer vers ${body.email}, le token est: ${body.token}`;
     body.comment = log;
+    body.type = "success";
     createLog.create(body, (err, results) => {
       if (err) {
         console.log(err);
@@ -164,6 +167,7 @@ module.exports = {
         //create log
         const log = `${results.fullName} a connecté`;
         body.comment = log;
+        body.type = "success";
         createLog.create(body, (err, results) => {
           if (err) {
             console.log(err);
@@ -199,20 +203,6 @@ module.exports = {
       if (err) {
         console.log(err);
       }
-      //create log
-      const log = `${user.fullName} a demandé la liste des chefs rayon`;
-      const body = {
-        comment: log,
-      };
-      createLog.create(body, (err, results) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({
-            success: 0,
-            message: "Database connection error",
-          });
-        }
-      });
       return res.status(200).json({
         success: 1,
         data: results,
@@ -240,17 +230,29 @@ module.exports = {
     });
   },
   checkTokenAuth: (req, res) => {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = decode(token);
-    if (decoded?.result) {
-      return res.status(200).json({
-        success: 1,
-        data: decoded?.result,
+    let token = req.get("Authorization");
+    if (token) {
+      // Remove Bearer from string
+      token = token.split(" ")[1];
+      jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
+        if (err) {
+          return res.json({
+            success: 0,
+            message: "Invalid Token..."
+          });
+        } else {
+          return res.json({
+            success: 1,
+            message: {
+              user: decoded.result
+            }
+          });
+        }
       });
     } else {
-      return res.status(200).json({
+      return res.json({
         success: 0,
-        message: "Invalid token",
+        message: "Access Denied! Unauthorized User"
       });
     }
   },
@@ -267,6 +269,7 @@ module.exports = {
         //create log
         const log = `${user.fullName} a demandé la liste des utilisateurs`;
         const body = {
+          type:"info",
           comment: log,
         };
         createLog.create(body, (err, results) => {
@@ -308,6 +311,22 @@ module.exports = {
         return;
       }
       if (!results) {
+        //create log
+        const log = `user has been deleted`;
+        const body = {
+          type:"danger",
+          comment: log,
+        };
+        createLog.create(body, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+            });
+          }
+        });
+
         return res.json({
           success: 0,
           message: "Record Not Found",

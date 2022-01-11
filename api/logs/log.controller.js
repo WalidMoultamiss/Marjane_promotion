@@ -27,20 +27,6 @@ module.exports = {
           console.log(err);
           return;
         }
-        //create log
-        const log = `${decoded.result.fullName} a demandé la liste des logs`;
-        let body = {
-          comment: log,
-        };
-        create(body, (err, results) => {
-          if (err) {
-            console.log(err);
-            return res.status(500).json({
-              success: 0,
-              message: "Database connection error",
-            });
-          }
-        });
         return res.json({
           success: 1,
           data: results,
