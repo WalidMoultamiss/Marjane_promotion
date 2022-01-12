@@ -13,6 +13,25 @@ module.exports = {
       }
     );
   },
+  createProduct: (data, callBack) => {
+    pool.query(
+      `INSERT INTO produit (name, price, category_id, marjane_id, description, img) VALUES  VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        data.name,
+        data.price,
+        data.category_id,
+        data.marjane_id,
+        data.description,
+        data.img,
+      ],
+      (error, results, fields) => {
+        if (error) {
+          callBack(error);
+        }
+        return callBack(null, results);
+      }
+    );
+  },
   status: (data, callBack) => {
     pool.query(
       `INSERT INTO status_promotion(chef_rayon_id, promotion_id, status, comment) VALUES (?, ?, ?, ?)`,
@@ -39,8 +58,7 @@ module.exports = {
   },
   getPromotions: (callBack) => {
     try {
-      pool.query(
-        `SELECT * FROM promotion_info`, (error, results, fields) => {
+      pool.query(`SELECT * FROM promotion_info`, (error, results, fields) => {
         if (error) {
           callBack(error);
         }
@@ -50,10 +68,12 @@ module.exports = {
       return callBack(error);
     }
   },
-  getproducts: (marjane_id,callBack) => {
+  getproducts: (marjane_id, callBack) => {
     try {
       pool.query(
-        `SELECT * FROM produit WHERE marjane_id = ${marjane_id}`,
+        marjane_id == undefined
+          ? `SELECT * FROM marjane_products`
+          : `SELECT * FROM produit WHERE marjane_id = ${marjane_id}`,
         (error, results, fields) => {
           if (error) {
             callBack(error);
@@ -80,5 +100,4 @@ module.exports = {
       return callBack(error);
     }
   },
-  
 };

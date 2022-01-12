@@ -4,6 +4,7 @@ const {
   getPromotions,
   getPromotionToday,
   getproducts,
+  createProduct
 } = require("./promotion.service");
 const createLog = require("../logs/log.controller");
 const { decode } = require("jsonwebtoken");
@@ -50,6 +51,7 @@ module.exports = {
       });
     });
   },
+
   getproducts: (req, res) => {
     const body = req.body;
     //get id from token
@@ -71,7 +73,24 @@ module.exports = {
       }
     });
   },
-
+  createProduct: (req, res) => {
+    const body = req.body;
+    //get id from token
+    createProduct(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({
+          success: 0,
+          message: "Database connection error",
+        });
+      }else{
+        return res.status(200).json({
+          success: 1,
+          data: results,
+        });
+      }
+    });
+  },
 
 
   getPromotions: (req, res) => {
